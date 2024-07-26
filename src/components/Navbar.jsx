@@ -37,7 +37,7 @@ export default function Navbar({ user }) {
       <div className="flex justify-between items-center">
         <Link href="/">
           <Image
-            src="../public/jhinthicha.svg"
+            src="/images/jhinthicha.svg"
             width={100}
             height={100}
             alt="logo"
