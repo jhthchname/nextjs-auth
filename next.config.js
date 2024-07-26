@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const nextConfig = withAntdLess({
-  lessVarsFilePathAppendToEndOfContent: false, // Append variables to end of content
+  lessVarsFilePathAppendToEndOfContent: false,
   cssLoaderOptions: {},
   webpack(config) {
     config.resolve.alias['@'] = path.join(__dirname, 'src');
@@ -19,7 +19,7 @@ const nextConfig = withAntdLess({
     return [
       {
         source: '/api/:path*',
-        destination: '/api/:path*' // This ensures that API routes are correctly forwarded.
+        destination: '/api/:path*'
       }
     ];
   },
