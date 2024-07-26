@@ -42,7 +42,7 @@ app.prepare().then(() => {
     .use(passport.initialize())
     .use(passport.session())
     .use("/", express.static("src"))
-    .use("/static", express.static("src/static"))
+    .use("/public", express.static("src/public"))
     .use((req, res, next) => {
       console.log(`Received ${req.method} request for ${req.url}`);
       next();
