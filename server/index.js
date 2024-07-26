@@ -35,7 +35,6 @@ app
       .use(
         cors({
           credentials: true,
-          origin: true,
           origin: ['http://localhost:3000', 'https://manage-next-13-nf9i.vercel.app'],
           methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
           exposedHeaders: "*",
@@ -46,7 +45,11 @@ app
       .use(passport.initialize())
       .use(passport.session())
       .use("/", express.static("src"))
-      .use(baseRoute);
+      .use(baseRoute)
+      .use((req, res, next) => {
+        console.log(`Received ${req.method} request for ${req.url}`);
+        next();
+      });
 
     server.all("*", (req, res) => {
       return handle(req, res);
