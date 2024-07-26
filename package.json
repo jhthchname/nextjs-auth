@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --exec babel-node server/index.js",
+    "dev": "NODE_ENV=development nodemon",
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint"

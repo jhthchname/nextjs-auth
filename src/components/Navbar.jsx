@@ -48,7 +48,7 @@ export default function Navbar({ user }) {
             <svg
               fill="none"
               stroke="currentColor"
-              stroke-linecap="round"
+              strokeLinecap="round"
               stroke-linejoin="round"
               stroke-width="2"
               viewBox="0 0 24 24"
