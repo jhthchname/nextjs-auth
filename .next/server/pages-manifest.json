@@ -2,11 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/auth/signin": "pages/api/auth/signin.js",
-  "/login": "pages/login.js",
-  "/": "pages/index.js",
-  "/api/auth/signout": "pages/api/auth/signout.js",
-  "/api/user": "pages/api/user.js",
   "/api/type-form": "pages/api/type-form.js",
+  "/api/user": "pages/api/user.js",
+  "/": "pages/index.js",
   "/api/user/check-token": "pages/api/user/check-token.js"
 }
