@@ -33,12 +33,11 @@ const Authenticate = async (user, email, password, done) => {
       );
       if (checkPwd) {
         let token = await generateToken(users);
-        console.log("token==========>", token);
         const newUser = await user.findOneAndUpdate(
           { email: email },
           { token: token }
         );
-        return done(undefined, { ...newUser?._doc }, null);
+        return done(undefined, { ...newUser?._doc, token: token }, null);
       } else {
         return done(undefined, false, {
           message: "รหัสผ่านไม่ถูกต้อง",

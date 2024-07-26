@@ -40,4 +40,4 @@ const FormSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("forms", FormSchema);
+export default mongoose.models.forms || mongoose.model("forms", FormSchema);

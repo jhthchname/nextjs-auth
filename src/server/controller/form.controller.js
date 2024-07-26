@@ -15,7 +15,6 @@ const findTypeFormById = async (id) => {
 };
 
 const matchQuery = (args) => {
-  console.log("args========>", args);
   let where = {};
   if (args?.query) {
     where = {
@@ -94,7 +93,7 @@ const formController = {
     return forms?.length > 0 ? forms[0] : { total: 0, results: [] };
   },
   form: async (args) => {
-    return await findUserById(args?.id);
+    return await findTypeFormById(args?.id);
   },
   create: async (args, user) => {
     return await Form.create({ ...args, createdBy: user?.id || user?._id });

@@ -7,7 +7,6 @@ import bodyParser from "body-parser";
 import passport from "passport";
 import session from "express-session";
 import { v4 } from "uuid";
-// import baseRoute from "./route/index.js";
 import { PORT, NODE_ENV, JWT_SECRET } from "./common/settings.js";
 import "./common/db.js";
 

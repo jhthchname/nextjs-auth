@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MONGO_URL } from './settings';
+import { MONGO_URL } from './settings.js';
 
 const MONGODB_URI = MONGO_URL;
 

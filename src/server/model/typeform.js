@@ -21,4 +21,4 @@ const TypeSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("typeforms", TypeSchema);
+export default mongoose.models.typeforms || mongoose.model("typeforms", TypeSchema);
