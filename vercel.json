@@ -6,7 +6,7 @@
         "use": "@vercel/node"
       },
       {
-        "src": "src/pages/_app.jsx",
+        "src": "src/pages/**/*.jsx",
         "use": "@vercel/next"
       }
     ],
@@ -17,7 +17,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "/src/pages/_app.jsx"
+        "dest": "/src/pages/index.jsx"
       }
     ]
-}
+  }
