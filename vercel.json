@@ -4,16 +4,21 @@
       {
         "src": "server/index.js",
         "use": "@vercel/node"
+      },
+      {
+        "src": "src/pages/_app.jsx",
+        "use": "@vercel/next"
       }
     ],
     "routes": [
       {
         "src": "/api/(.*)",
-        "dest": "server/index.js"
+        "dest": "/server/index.js"
       },
       {
         "src": "/(.*)",
-        "dest": "/"
+        "dest": "/src/pages/_app.jsx"
       }
     ]
-  }
+}
+  
