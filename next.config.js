@@ -10,10 +10,10 @@ const __dirname = path.dirname(__filename);
 const nextConfig = withAntdLess({
   lessVarsFilePathAppendToEndOfContent: false, // Append variables to end of content
   cssLoaderOptions: {},
-  webpack(config) {
-    config.resolve.alias['@'] = path.join(__dirname, 'src');
-    return config;
-  },
+  // webpack(config) {
+  //   config.resolve.alias['@'] = path.join(__dirname, 'src');
+  //   return config;
+  // },
   reactStrictMode: true,
   async rewrites() {
     return [
