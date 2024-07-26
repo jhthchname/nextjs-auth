@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import User from "../model/user.model.js";
 import { SECRET_TOKEN } from "../common/settings.js";
+import { serialize } from 'cookie';
 
 // Function to generate a random salt
 const generateSalt = () => {
@@ -29,7 +30,7 @@ const hashedPassword = (password) => {
   return { newPwd, salt };
 };
 
-export const setAuthCookie = (res, user) => {
+const setAuthCookie = (res, user) => {
   if (user) {
     res.setHeader('Set-Cookie', [
       serialize('token', user.token, { httpOnly: true, path: '/' }),
@@ -41,7 +42,7 @@ export const setAuthCookie = (res, user) => {
       }), { httpOnly: true, path: '/' })
     ]);
   }
-  return res;
+  return res.status(200).json(user)
 };
 
 const generateToken = (user) => {
