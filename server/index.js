@@ -26,7 +26,7 @@ app
           resave: false,
           saveUninitialized: false,
           cookie: {
-            secure: true,
+            secure: !dev,
           },
         })
       )
@@ -36,6 +36,7 @@ app
         cors({
           credentials: true,
           origin: true,
+          methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
           exposedHeaders: "*",
         })
       )
