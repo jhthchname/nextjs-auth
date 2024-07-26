@@ -29,19 +29,17 @@ const hashedPassword = (password) => {
   return { newPwd, salt };
 };
 
-const setAuthCookie = (res, user) => {
+export const setAuthCookie = (res, user) => {
   if (user) {
-    res.cookie("token", user?.token, { httpOnly: true });
-    res.cookie(
-      "user",
-      {
-        id: user?._id,
-        email: user?.email,
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-      },
-      { httpOnly: true }
-    );
+    res.setHeader('Set-Cookie', [
+      serialize('token', user.token, { httpOnly: true, path: '/' }),
+      serialize('user', JSON.stringify({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }), { httpOnly: true, path: '/' })
+    ]);
   }
   return res;
 };
