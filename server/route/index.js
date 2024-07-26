@@ -6,9 +6,9 @@ import formRoute from "./form.route.js";
 
 const baseRoute = express.Router();
 
-baseRoute.use("/api/user", userRoute);
-baseRoute.use("/api/auth", authRoute);
-baseRoute.use("/api/type-form", typeFormRoute);
-baseRoute.use("/api/form", formRoute);
+baseRoute.use("/user", userRoute);
+baseRoute.use("/auth", authRoute);
+baseRoute.use("/type-form", typeFormRoute);
+baseRoute.use("/form", formRoute);
 
 export default baseRoute;
