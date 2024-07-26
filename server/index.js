@@ -46,6 +46,7 @@ app
       .use(passport.session())
       .use("/", express.static("src"))
       .use(baseRoute)
+      .options('*', cors())
       .use((req, res, next) => {
         console.log(`Received ${req.method} request for ${req.url}`);
         next();
