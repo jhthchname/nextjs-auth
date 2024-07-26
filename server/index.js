@@ -1,3 +1,4 @@
+// server/index.js
 import express from "express";
 import next from "next";
 import cookieParser from "cookie-parser";
@@ -42,7 +43,7 @@ app.prepare().then(() => {
     .use(bodyParser.json())
     .use(passport.initialize())
     .use(passport.session())
-    .use("/api", baseRoute)
+    .use("/api", baseRoute)  // Ensure API routes are prefixed with /api
     .use((req, res, next) => {
       console.log(`Received ${req.method} request for ${req.url}`);
       next();
