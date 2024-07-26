@@ -1,7 +1,4 @@
 {
-    "builds": [
-      { "src": "pages/api/**/*.js", "use": "@vercel/node" }
-    ],
     "rewrites": [
       { "source": "/api/(.*)", "destination": "/api/$1" }
     ]
