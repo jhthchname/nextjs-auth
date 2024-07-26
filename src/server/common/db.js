@@ -1,29 +1,33 @@
-import mongoose from "mongoose";
-import { MONGO_URL, MONGO_USER, MONGO_PASS } from "./settings.js";
+import mongoose from 'mongoose';
+import { MONGO_URL } from './settings';
 
-// help to debug mongoose
-if (process.env.NODE_ENV !== "test") {
-  mongoose.set("debug", false);
+const MONGODB_URI = MONGO_URL;
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-if (MONGO_USER && MONGO_PASS && process.env.NODE_ENV === "production") {
-  config = {
-    ...config,
-    auth: {
-      authSource: "admin",
-    },
-    user: MONGO_USER,
-    pass: MONGO_PASS,
-  };
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-mongoose
-  .connect(MONGO_URL)
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((err) => {
-    console.error("Error connecting to database", err);
-  });
+async function dbConnect() {
+  if (cached.conn) {
+    return cached.conn;
+  }
 
-export default mongoose
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }).then((mongoose) => {
+      return mongoose;
+    });
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+export default dbConnect;
