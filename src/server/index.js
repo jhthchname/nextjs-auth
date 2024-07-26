@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import passport from "passport";
 import session from "express-session";
 import { v4 } from "uuid";
-import baseRoute from "./route/index.js";
+// import baseRoute from "./route/index.js";
 import { PORT, NODE_ENV, JWT_SECRET } from "./common/settings.js";
 import "./common/db.js";
 
@@ -43,7 +43,6 @@ app.prepare().then(() => {
     .use(passport.initialize())
     .use(passport.session())
     .use("/", express.static("src"))
-    .use("/api", baseRoute)  // Ensure API routes are prefixed with /api
     .use((req, res, next) => {
       console.log(`Received ${req.method} request for ${req.url}`);
       next();
