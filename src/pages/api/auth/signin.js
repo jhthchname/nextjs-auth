@@ -4,7 +4,9 @@ import { setAuthCookie } from "../../../server/auth/auth.service";
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
+            console.log('req.body=========>',req.body)
             let result = await authController.signin(req.body);
+            console.log('result=========>',result)
             setAuthCookie(res, result);
         } catch (error) {
             res.status(400).json({ message: error.message });
