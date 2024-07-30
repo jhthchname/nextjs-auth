@@ -38,7 +38,10 @@ export default function RequestForm(props) {
     }
 
     if (authStatus === "login") {
-      showToast("Login success!");
+      if (!sessionStorage.getItem("loginToastShown")) {
+        showToast("Login success!");
+        sessionStorage.setItem("loginToastShown", "true"); // บันทึกสถานะการแสดงข้อความ
+      }
       router.replace("/", undefined, { shallow: true });
     }
 
@@ -70,7 +73,7 @@ export default function RequestForm(props) {
     try {
       const response = await axios.get("/api/type-form", {
         headers: {
-          Authorization: `Bearer ${props?.user?.token}`,
+          Authorization: `Bearer ${props?.user?.token}`, // ตรวจสอบ Token ที่ถูกส่ง
         },
       });
       if (response.data.results) {
@@ -78,7 +81,17 @@ export default function RequestForm(props) {
       }
     } catch (error) {
       console.error("Error fetching request types:", error);
-      showToast("ไม่สามารถดึงข้อมูลประเภทคำขอได้", "error");
+      if (error.response) {
+        // แสดงข้อความจากเซิร์ฟเวอร์หากมี
+        showToast(
+          `Error: ${
+            error.response.data.message || "ไม่สามารถดึงข้อมูลประเภทคำขอได้"
+          }`,
+          "error"
+        );
+      } else {
+        showToast("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้", "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,6 +111,7 @@ export default function RequestForm(props) {
       type: "",
       detail: "",
     });
+    sessionStorage.removeItem("loginToastShown"); // รีเซ็ตสถานะการแสดงข้อความเมื่อรีเซ็ตฟอร์ม
   };
 
   const handleSubmit = async (e) => {
@@ -180,7 +194,6 @@ export default function RequestForm(props) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Form fields remain the same */}
               <div>
                 <label
                   htmlFor="title"

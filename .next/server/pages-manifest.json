@@ -2,7 +2,12 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/requestmanagement": "pages/requestmanagement.js",
+  "/": "pages/index.js",
+  "/api/user": "pages/api/user.js",
   "/usermanagement": "pages/usermanagement.js",
-  "/": "pages/index.js"
+  "/api/user/check-token": "pages/api/user/check-token.js",
+  "/api/type-form": "pages/api/type-form.js",
+  "/api/form/create": "pages/api/form/create.js",
+  "/requestmanagement": "pages/requestmanagement.js",
+  "/api/form": "pages/api/form.js"
 }
