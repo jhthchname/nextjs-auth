@@ -59,27 +59,43 @@ export default function UserManagement(props) {
   };
   const handleUpdate = async (updatedUser) => {
     try {
-      await fetch(`/api/user/update/${updatedUser.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      });
-      setUsers(
-        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+      const response = await axios.put(
+        `/api/user/update/${updatedUser.id}`,
+        updatedUser,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${props.user.token}`,
+          },
+        }
       );
+      if (response.status === 200) {
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          data: prevUsers.data.map((user) =>
+            user.id === updatedUser.id ? updatedUser : user
+          ),
+        }));
+      }
     } catch (error) {
       console.error("Update failed", error);
     }
   };
-
   const handleDelete = async (userId) => {
     try {
-      await fetch(`/api/user/delete/${userId}`, {
-        method: "DELETE",
+      const response = await axios.delete(`/api/user/delete/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${props.user.token}`,
+        },
       });
-      setUsers(users.filter((user) => user.id !== userId));
+      if (response.status === 200) {
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          data: prevUsers.data.filter((user) => user.id !== userId),
+          total: prevUsers.total - 1,
+        }));
+      }
     } catch (error) {
       console.error("Delete failed", error);
     }

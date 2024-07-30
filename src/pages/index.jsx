@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { checkAuth } from "@/auth/common";
 import { ManageToast } from "@/components/common";
 import axios from "axios";
+import { Spin } from "antd"; // Import Spin component
 
 export async function getServerSideProps({ req }) {
   return await checkAuth(req);
@@ -17,6 +18,7 @@ export default function RequestForm(props) {
   const [data, setData] = useState([]);
   const searchParams = useSearchParams();
   const { showToast, resetSuccessToast } = ManageToast();
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const [form, setForm] = useState({
     title: "",
@@ -45,6 +47,7 @@ export default function RequestForm(props) {
   }, [searchParams, router, showToast, resetSuccessToast]);
 
   const _queryData = async () => {
+    setLoading(true);
     try {
       const result = await axios.get("/api/user", {
         headers: {
@@ -57,10 +60,13 @@ export default function RequestForm(props) {
       } else setData([]);
     } catch (error) {
       console.log("error query data user=========>", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchRequestTypes = async () => {
+    setLoading(true);
     try {
       const response = await axios.get("/api/type-form", {
         headers: {
@@ -73,6 +79,8 @@ export default function RequestForm(props) {
     } catch (error) {
       console.error("Error fetching request types:", error);
       showToast("ไม่สามารถดึงข้อมูลประเภทคำขอได้", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,6 +107,7 @@ export default function RequestForm(props) {
       showToast("กรุณากรอกข้อมูลให้ครบทุกช่อง", "error");
       return;
     }
+    setLoading(true);
     if (title && type && detail) {
       try {
         const response = await axios({
@@ -106,7 +115,7 @@ export default function RequestForm(props) {
           url: "/api/form/create",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${props?.user?.token}`, // เพิ่มบรรทัดนี้
+            Authorization: `Bearer ${props?.user?.token}`,
           },
           data: JSON.stringify(form),
         });
@@ -142,6 +151,8 @@ export default function RequestForm(props) {
           console.error("Error message:", error.message);
           showToast("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง", "error");
         }
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -163,77 +174,86 @@ export default function RequestForm(props) {
           <p className="mb-8 lg:mb-16 font-light text-center text-black sm:text-xl">
             ยินดีต้อนรับสู่ระบบยื่นคำขอ กรุณากรอกรายละเอียดให้ครบถ้วน
           </p>
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div>
-              <label
-                htmlFor="title"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                ชื่อเรื่อง
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={form.title}
-                onChange={handleInputChange}
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
-                placeholder="ระบุชื่อเรื่องที่ต้องการยื่นตำขอ"
-                required
-              />
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Spin size="large" />
             </div>
-            <div>
-              <label
-                htmlFor="type"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                ประเภท
-              </label>
-              <select
-                id="type"
-                value={form.type}
-                onChange={handleInputChange}
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
-              >
-                <option value="">เลือกประเภทคำขอ</option>
-                {requestTypes.map((type) => (
-                  <option key={type._id} value={type.name}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="sm:col-span-2">
-              <label
-                htmlFor="detail"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                รายละเอียด
-              </label>
-              <textarea
-                id="detail"
-                rows="6"
-                value={form.detail}
-                onChange={handleInputChange}
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
-                placeholder="อธิบายรายละเอียดเพิ่มเติม"
-              ></textarea>
-            </div>
-            <div className="flex space-x-4">
-              <button
-                type="submit"
-                className="py-3 px-6 text-sm font-medium text-center text-white rounded-lg bg-[#806aff] sm:w-fit hover:bg-[#6e59e7] focus:ring-4 focus:outline-none focus:ring-[#9f90f7]"
-              >
-                ส่งคำขอ
-              </button>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="py-3 px-6 text-sm font-medium text-center text-white rounded-lg bg-gray-400 sm:w-fit hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-300"
-              >
-                รีเซ็ต
-              </button>
-            </div>
-          </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Form fields remain the same */}
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  ชื่อเรื่อง
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  value={form.title}
+                  onChange={handleInputChange}
+                  className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
+                  placeholder="ระบุชื่อเรื่องที่ต้องการยื่นตำขอ"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="type"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  ประเภท
+                </label>
+                <select
+                  id="type"
+                  value={form.type}
+                  onChange={handleInputChange}
+                  className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
+                >
+                  <option value="">เลือกประเภทคำขอ</option>
+                  {requestTypes.map((type) => (
+                    <option key={type._id} value={type._id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="detail"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  รายละเอียด
+                </label>
+                <textarea
+                  id="detail"
+                  rows="6"
+                  value={form.detail}
+                  onChange={handleInputChange}
+                  className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-[#6e59e7] focus:ring-[#806aff] focus:ring-1 block w-full p-2.5"
+                  placeholder="อธิบายรายละเอียดเพิ่มเติม"
+                ></textarea>
+              </div>
+              <div className="flex space-x-4">
+                <button
+                  type="submit"
+                  className="py-3 px-6 text-sm font-medium text-center text-white rounded-lg bg-[#806aff] sm:w-fit hover:bg-[#6e59e7] focus:ring-4 focus:outline-none focus:ring-[#9f90f7]"
+                  disabled={loading}
+                >
+                  {loading ? "กำลังส่ง..." : "ส่งคำขอ"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="py-3 px-6 text-sm font-medium text-center text-white rounded-lg bg-gray-400 sm:w-fit hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-300"
+                  disabled={loading}
+                >
+                  รีเซ็ต
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </section>
     </LayoutContainer>
