@@ -59,43 +59,27 @@ export default function UserManagement(props) {
   };
   const handleUpdate = async (updatedUser) => {
     try {
-      const response = await axios.put(
-        `/api/user/update/${updatedUser.id}`,
-        updatedUser,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${props.user.token}`,
-          },
-        }
+      await fetch(`/api/user/update/${updatedUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      });
+      setUsers(
+        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
       );
-      if (response.status === 200) {
-        setUsers((prevUsers) => ({
-          ...prevUsers,
-          data: prevUsers.data.map((user) =>
-            user.id === updatedUser.id ? updatedUser : user
-          ),
-        }));
-      }
     } catch (error) {
       console.error("Update failed", error);
     }
   };
+
   const handleDelete = async (userId) => {
     try {
-      const response = await axios.delete(`/api/user/delete/${userId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${props.user.token}`,
-        },
+      await fetch(`/api/user/delete/${userId}`, {
+        method: "DELETE",
       });
-      if (response.status === 200) {
-        setUsers((prevUsers) => ({
-          ...prevUsers,
-          data: prevUsers.data.filter((user) => user.id !== userId),
-          total: prevUsers.total - 1,
-        }));
-      }
+      setUsers(users.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Delete failed", error);
     }
@@ -161,6 +145,7 @@ export default function UserManagement(props) {
                                   title:
                                     "Are you sure you want to delete this user?",
                                   onOk: () => handleDelete(user.id),
+                                  centered: true,
                                 });
                               }}
                               className="bg-[#ffdada] px-3 py-2 rounded-sm hover:bg-white"

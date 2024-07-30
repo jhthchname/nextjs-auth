@@ -1,11 +1,4 @@
 import TypeForm from "../model/typeform.js";
-import { hashedPassword } from "../auth/auth.service.js";
-/* `TypeSchema` is defining the schema for a MongoDB collection named "typeforms". It specifies
-the structure of documents that will be stored in the collection, including the fields `name`,
-`createdOn`, and `updatedOn`. The `name` field is of type String and is required. The
-`createdOn` and `updatedOn` fields are of type Date and have default values set to the current
-date and time when a document is created. This schema will be used by Mongoose to interact
-with the "typeforms" collection in the MongoDB database. */
 
 const findTypeFormById = async (id) => {
   let typeForm = await TypeForm.findById(id);

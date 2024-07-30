@@ -11,7 +11,6 @@ export async function getServerSideProps({ req }) {
 export default function RequestManagement(props) {
   const [requests, setRequests] = useState([]);
   const [requestTypes, setRequestTypes] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   let defaultPageSize = 10;
@@ -43,7 +42,7 @@ export default function RequestManagement(props) {
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `/api/form?query=${searchTerm}&skip=${
+          `/api/form?skip=${
             (currentPage - 1) * defaultPageSize
           }&limit=${defaultPageSize}`,
           {
@@ -74,7 +73,7 @@ export default function RequestManagement(props) {
       }
     };
     fetchRequests();
-  }, [searchTerm, currentPage, props.user.token, requestTypes]);
+  }, [currentPage, props.user.token, requestTypes]);
 
   return (
     <LayoutContainer user={props?.user}>

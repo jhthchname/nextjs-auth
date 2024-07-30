@@ -3,14 +3,13 @@ import { Strategy } from "passport-local";
 import { comparePasswords, generateToken } from "../auth.service.js";
 
 const Authenticate = async (user, email, password, done) => {
-  console.log('email=========>',email)
+  console.log("email=========>", email);
   user
     .findOne({ email: email })
     .then(async (users) => {
-      console.log('users=========>',users)
+      console.log("users=========>", users);
       if (!users) {
         return done(undefined, false, {
-          // message: "ไม่พบผู้ใช้งานนี้ในระบบ",
           message: "อีเมลไม่ถูกต้อง",
         });
       }

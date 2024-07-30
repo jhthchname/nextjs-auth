@@ -1,12 +1,4 @@
-import { FaPray } from "react-icons/fa";
 import Form from "../model/form.js";
-import mongoose, { Schema } from "mongoose";
-/* `TypeSchema` is defining the schema for a MongoDB collection named "typeforms". It specifies
-the structure of documents that will be stored in the collection, including the fields `name`,
-`createdOn`, and `updatedOn`. The `name` field is of type String and is required. The
-`createdOn` and `updatedOn` fields are of type Date and have default values set to the current
-date and time when a document is created. This schema will be used by Mongoose to interact
-with the "typeforms" collection in the MongoDB database. */
 
 const findTypeFormById = async (id) => {
   let form = await Form.findById(id);
@@ -24,12 +16,6 @@ const matchQuery = (args) => {
       ],
     };
   }
-  //   if (args?.typeForm) {
-  //     where = {
-  //       ...where,
-  //       type: Schema.ObjectId(args?.typeForm),
-  //     };
-  //   }
   return where;
 };
 

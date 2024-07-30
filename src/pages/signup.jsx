@@ -57,7 +57,7 @@ export default function Signup() {
         data: JSON.stringify(formData),
       });
       console.log("response=========>", response);
-      // let result = response.json();
+
       if (response?.data?._id) {
         showToast("Sign up success!");
         router.push(`/signup-success/${response.data?._id}`);
