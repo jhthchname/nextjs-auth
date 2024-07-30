@@ -86,7 +86,7 @@ const formController = {
   },
   update: async (args, user) => {
     let form = await findTypeFormById(args?.id);
-    if (args?.status) {
+    if (typeof args?.status === "boolean") {
       form.status = args?.status;
       form.approveOn = new Date();
       form.approveBy = user?.id || user?._id;

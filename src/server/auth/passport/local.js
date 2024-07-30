@@ -17,6 +17,10 @@ const Authenticate = async (user, email, password, done) => {
         return done(undefined, false, {
           message: "กรุณาตั้งรหัสผ่านก่อนเข้าสู่ระบบ",
         });
+      if (!users?.verify?.status)
+        return done(undefined, false, {
+          message: "ยังไม่อนุมัติการใช้งานในระบบ กรุณาติดต่อเจ้าหน้าที่",
+        });
       if (
         !users?.salt ||
         users?.salt?.toString().length === 0 ||

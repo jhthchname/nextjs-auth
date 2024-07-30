@@ -15,6 +15,7 @@ const matchQuery = (args) => {
         { firstName: { $regex: args?.query, $options: "i" } },
         { lastName: { $regex: args?.query, $options: "i" } },
         { email: { $regex: args?.query, $options: "i" } },
+        { phone: { $regex: args?.query, $options: "i" } },
       ],
     };
   }
@@ -26,6 +27,20 @@ const userController = {
     const user = await User.aggregate([
       {
         $match: matchQuery(args),
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "approveBy",
+          foreignField: "_id",
+          as: "approveByUser",
+        },
+      },
+      {
+        $unwind: {
+          path: "$approveByUser",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $facet: {
@@ -53,7 +68,6 @@ const userController = {
     return user?.length > 0 ? user[0] : { total: 0, results: [] };
   },
   user: async (args) => {
-    console.log("args=========>", args);
     return await findUserById(args?.id);
   },
   create: async (args) => {
@@ -70,9 +84,25 @@ const userController = {
   update: async (args, data) => {
     let user = await findUserById(args?.id);
     delete args?.id;
-    Object.keys(args).forEach((key) => (user[key] = data[key]));
+    Object.keys(data).forEach((key) => {
+      if (key !== "id") {
+        user[key] = data[key];
+      }
+    });
+
     user.updatedOn = Date.now();
+
     return await user.save();
+  },
+  approve: async (args, data) => {
+    const newUser = await User.findOneAndUpdate(
+      { _id: args?.id },
+      {
+        verify: { status: args?.status },
+        approveBy: data?.id || data?._id,
+      }
+    );
+    return newUser;
   },
   delete: async (args) => {
     return await User.findByIdAndDelete(args?.id);

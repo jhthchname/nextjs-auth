@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import LayoutContainer from "../components/Layout";
 import ModalEdit from "../components/Modal";
 import { FaSearch } from "react-icons/fa";
-import { Button, Modal, Pagination, Spin } from "antd";
-import { MdEdit, MdDeleteForever } from "react-icons/md";
+import { Button, Modal, Pagination, Spin, Radio } from "antd";
+import { MdEdit, MdDeleteForever, MdCreditScore } from "react-icons/md";
 import { checkAuth } from "@/auth/common";
 import axios from "axios";
+import { ModalApprove } from "@/components/common";
 
 export async function getServerSideProps({ req }) {
-  return await checkAuth(req);
+  return await checkAuth(req, ["super admin", "admin"]);
 }
 
 export default function UserManagement(props) {
@@ -18,6 +19,8 @@ export default function UserManagement(props) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [approve, setApprove] = useState({ id: null, status: "" });
+  const [isModal, setIsModal] = useState(false);
   let defaultPageSize = 10;
 
   useEffect(() => {
@@ -42,6 +45,13 @@ export default function UserManagement(props) {
           lastName: user.lastName,
           email: user.email || "-",
           phone: user.phone || "-",
+          approveBy: user?.approveBy,
+          status: user?.verify?.status,
+          approveName: user?.approveBy
+            ? user?.approveByUser?.firstName +
+              " " +
+              user?.approveByUser?.lastName
+            : "-",
         }));
         setUsers({ data: mapUser, total: response.data.total });
         setLoading(false);
@@ -57,18 +67,27 @@ export default function UserManagement(props) {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
+
   const handleUpdate = async (updatedUser) => {
     try {
-      await fetch(`/api/user/${updatedUser.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      });
-      setUsers(
-        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+      const response = await axios.put(
+        `/api/user/${updatedUser.id}`,
+        updatedUser,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${props.user.token}`,
+          },
+        }
       );
+      if (response.status === 200) {
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          data: prevUsers.data.map((user) =>
+            user.id === updatedUser.id ? updatedUser : user
+          ),
+        }));
+      }
     } catch (error) {
       console.error("Update failed", error);
     }
@@ -76,15 +95,49 @@ export default function UserManagement(props) {
 
   const handleDelete = async (userId) => {
     try {
-      await fetch(`/api/user/${userId}`, {
-        method: "DELETE",
+      const response = await axios.delete(`/api/user/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${props.user.token}`,
+        },
       });
-      setUsers(users.filter((user) => user.id !== userId));
+      if (response.status === 200) {
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          data: prevUsers.data.filter((user) => user.id !== userId),
+          total: prevUsers.total - 1,
+        }));
+      }
     } catch (error) {
       console.error("Delete failed", error);
     }
   };
 
+  const approveUser = async () => {
+    try {
+      const response = await axios.put(
+        `/api/user/approve`,
+        {
+          id: approve?.id,
+          status: approve?.status === "yes" ? true : false,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${props.user.token}`,
+          },
+        }
+      );
+      if (response?.status === 200) {
+        _onResetApprove();
+        fetchUsers();
+      }
+    } catch (err) {}
+  };
+  const _onResetApprove = () => {
+    setIsModal(false);
+    setApprove({ id: null, status: false });
+  };
   return (
     <LayoutContainer user={props?.user}>
       <section className="bg-white">
@@ -121,6 +174,8 @@ export default function UserManagement(props) {
                       <th className="border p-2">Last Name</th>
                       <th className="border p-2">Email</th>
                       <th className="border p-2">Phone number</th>
+                      <th className="border p-2">สถานะ</th>
+                      <th className="border p-2">ชื่อผู้อนุมัติ/ไม่อนุมัติ</th>
                       <th className="border p-2">Action</th>
                     </tr>
                   </thead>
@@ -132,7 +187,36 @@ export default function UserManagement(props) {
                         <td className="border p-2">{user.email}</td>
                         <td className="border p-2">{user.phone}</td>
                         <td className="border p-2">
+                          {!user?.approveBy && !user.status
+                            ? "รออนุมัติ"
+                            : user?.approveBy && user.status
+                            ? "อนุมัติ"
+                            : user?.approveBy && !user.status
+                            ? "ไม่อนุมัติ"
+                            : "Unknown"}
+                        </td>
+                        <td className="border p-2">
+                          {user.approveName || "-"}
+                        </td>
+                        <td className="border p-2">
                           <div className="flex justify-center space-x-2">
+                            {!user?.approveBy && (
+                              <Button
+                                onClick={() => {
+                                  setApprove({ id: user.id, status: false });
+                                  setIsModal(true);
+                                  // Modal.confirm({
+                                  //   title:
+                                  //     "Are you sure you want to approve this user?",
+                                  //   onOk: () => setApprove({id: user.id, status: false}),
+                                  //   centered: true,
+                                  // })
+                                }}
+                                className="bg-[#e6e1ff] px-3 py-2 rounded-sm hover:bg-[#cfc7ff]"
+                              >
+                                <MdCreditScore className="fill-[#6e59e7]" />
+                              </Button>
+                            )}
                             <Button
                               onClick={() => handleEdit(user)}
                               className="bg-[#e6e1ff] px-3 py-2 rounded-sm hover:bg-[#cfc7ff]"
@@ -178,6 +262,14 @@ export default function UserManagement(props) {
               onUpdate={handleUpdate}
             />
           )}
+          <ModalApprove
+            title="อนุมัติ User"
+            isModal={isModal}
+            data={approve}
+            onSave={approveUser}
+            onCancel={_onResetApprove}
+            onChange={setApprove}
+          />
         </div>
       </section>
     </LayoutContainer>

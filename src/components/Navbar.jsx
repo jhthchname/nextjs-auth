@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 
 export default function Navbar({ user }) {
+  console.log("user========>", user);
   const router = useRouter();
 
   const _signOut = async () => {
@@ -22,7 +23,13 @@ export default function Navbar({ user }) {
       );
       if (result?.data?._id) router.push("/login");
     } catch (error) {
-      console.log("error signout=========>", error);
+      if (error.response?.status === 401) {
+        // Token expired or unauthorized
+        console.log("Token expired or unauthorized, redirecting to login...");
+        router.push("/login");
+      } else {
+        console.log("Error during signout:", error);
+      }
     }
   };
 
@@ -71,26 +78,30 @@ export default function Navbar({ user }) {
                 <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
                 <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
               </li>
-              <li className="relative group">
-                <Link
-                  href="/requestmanagement"
-                  className="text-[#6e59e7] text-lg font-normal my-2"
-                >
-                  Request Management
-                </Link>
-                <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
-                <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
-              </li>
-              <li className="relative group">
-                <Link
-                  href="/usermanagement"
-                  className="text-[#6e59e7] text-lg font-normal my-2"
-                >
-                  User Management
-                </Link>
-                <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
-                <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
-              </li>
+              {["super admin", "admin"].includes(user?.role) && (
+                <li className="relative group">
+                  <Link
+                    href="/requestmanagement"
+                    className="text-[#6e59e7] text-lg font-normal my-2"
+                  >
+                    Request Management
+                  </Link>
+                  <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
+                  <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
+                </li>
+              )}
+              {["super admin", "admin"].includes(user?.role) && (
+                <li className="relative group">
+                  <Link
+                    href="/usermanagement"
+                    className="text-[#6e59e7] text-lg font-normal my-2"
+                  >
+                    User Management
+                  </Link>
+                  <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
+                  <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-[2px] bg-[#816def] group-hover:w-1/2"></span>
+                </li>
+              )}
               <li className="w-5"></li>
               <li className="relative">
                 <button

@@ -8,7 +8,7 @@ import axios from "axios";
 import { Spin } from "antd"; // Import Spin component
 
 export async function getServerSideProps({ req }) {
-  return await checkAuth(req);
+  return await checkAuth(req, ["user", "admin", "super admin"]);
 }
 
 export default function RequestForm(props) {
