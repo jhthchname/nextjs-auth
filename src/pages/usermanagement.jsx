@@ -59,7 +59,7 @@ export default function UserManagement(props) {
   };
   const handleUpdate = async (updatedUser) => {
     try {
-      await fetch(`/api/user/update/${updatedUser.id}`, {
+      await fetch(`/api/user/${updatedUser.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export default function UserManagement(props) {
 
   const handleDelete = async (userId) => {
     try {
-      await fetch(`/api/user/delete/${userId}`, {
+      await fetch(`/api/user/${userId}`, {
         method: "DELETE",
       });
       setUsers(users.filter((user) => user.id !== userId));

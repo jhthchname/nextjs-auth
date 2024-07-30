@@ -67,10 +67,10 @@ const userController = {
       salt: salt,
     });
   },
-  update: async (args) => {
+  update: async (args, data) => {
     let user = await findUserById(args?.id);
     delete args?.id;
-    Object.keys(args).forEach((key) => (user[key] = args[key]));
+    Object.keys(args).forEach((key) => (user[key] = data[key]));
     user.updatedOn = Date.now();
     return await user.save();
   },
